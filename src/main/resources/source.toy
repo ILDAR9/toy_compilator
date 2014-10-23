@@ -1,0 +1,30 @@
+import id1;
+import id2;
+import id3;
+
+public class com.example.Class1 extends Object; {
+    public static int field1;
+    private real[] field2;
+
+    public static void method1(int param1, real param2) {
+    }
+
+    private void method2(int[] param3, real[] param4) {
+    }
+
+    private void method3() {
+        int localField1;
+        real[] localField2;
+        MyClass localField3;
+        MyClass[] localField4;
+
+        localField5 = 5;
+        localField6.compound.subCompound = 6;
+        localField7[0] = 7;
+        localField8.compound2.subCompound2[1] = 8;
+        callMethod1();
+        callMethod2(1, 2);
+        callMethod3(-3 + 4 * 5.1);
+        callMethod4(6 * 7.2 + 8);
+    }
+}

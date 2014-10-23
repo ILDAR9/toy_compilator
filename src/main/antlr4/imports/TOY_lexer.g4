@@ -1,8 +1,5 @@
 lexer grammar TOY_lexer;
 
-@header {
-    package innopolis.icc.toy.lexer;
-}
 
 // Identifiers & numbers
 NUMBER     : '0'..'9'    ;
