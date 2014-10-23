@@ -1,0 +1,285 @@
+grammar TOY_parser;
+
+@header {
+    package innopolis.icc.toy.lexer;
+}
+
+// Identifiers & numbers
+NUMBER     : '0'..'9'    ;
+IDENTIFIER : [a-zA-Z]+ ;
+
+// Keywords
+IMPORT  : 'import'       ;
+CLASS   : 'class'        ;
+EXTENDS : 'extends'      ;
+PRIVATE : 'private'      ;
+PUBLIC  : 'public'       ;
+STATIC  : 'static'       ;
+VOID    : 'void'         ;
+IF      : 'if'           ;
+ELSE    : 'else'         ;
+WHILE   : 'while'        ;
+LOOP    : 'for'          ;
+RETURN  : 'return'       ;
+PRINT   : 'print'        ;
+NULL    : 'null'         ;
+NEW     : 'new'          ;
+INT     : 'int'          ;
+REAL    : 'real'|'float' ;
+BOOLEAN : 'bool'         ;
+
+
+// Delimiters
+LBRACE     :'{' ;
+RBRACE     :'}' ;
+LPAREN     :'(' ;
+RPAREN     :')' ;
+LBRACKET   :'[' ;
+RBRACKET   :']' ;
+COMMA      :',' ;
+DOT        :'.' ;
+SEMICOLON  :';' ;
+
+//Operator signs
+ASSIGN     :'='  ;
+LESS       :'<'  ;
+GREATER    :'>'  ;
+EQUAL      :'==' ;
+NOT_EQUAL  :'!=' ;
+AND        :'&&' ;
+OR         :'||' ;
+POW        : '^' ;
+PLUS       :'+'  ;
+MINUS      :'-'  ;
+MULTIPLY   :'*'  ;
+DIVIDE     :'/'  ;
+
+//WS
+//:   ' ' -> channel(HIDDEN);
+WS : [ \r\t\n]+ -> skip ;
+
+
+
+//start compilationUnit
+compilationUnit
+        : imports classDeclarations
+       ;
+
+imports
+       :  /* empty */
+       | imp imports
+       ;
+
+imp
+       : IMPORT IDENTIFIER SEMICOLON
+       ;
+
+classDeclarations
+       : /* empty */
+       | classDeclaration classDeclarations
+       ;
+
+classDeclaration
+    :CLASS compoundName extension SEMICOLON classBody
+       | PUBLIC CLASS compoundName extension SEMICOLON classBody
+       ;
+
+extension
+       : /* empty */
+       | EXTENDS IDENTIFIER
+       ;
+
+classBody
+       : LBRACE              RBRACE
+       | LBRACE classMembers RBRACE
+       ;
+
+classMembers
+       :              classMember
+       | classMembers classMember
+       ;
+
+classMember
+       : fieldDeclaration
+       | methodDeclaration
+       ;
+
+fieldDeclaration
+       : visibility staticness type IDENTIFIER SEMICOLON
+       ;
+
+visibility
+       : /* empty */
+       | PRIVATE
+       | PUBLIC
+       ;
+
+staticness
+       : /* empty */
+       | STATIC
+       ;
+
+methodDeclaration
+       : visibility staticness methodType IDENTIFIER parameters
+            body
+       ;
+
+parameters
+       : LPAREN               RPAREN
+       | LPAREN parameterList RPAREN
+       ;
+
+parameterList
+       :                     parameter
+       | parameterList COMMA parameter
+       ;
+
+parameter
+       : type IDENTIFIER
+       ;
+
+methodType
+       : type
+       | VOID
+       ;
+
+body
+       : LBRACE localDeclarations statements RBRACE
+       ;
+
+localDeclarations
+       :                   localDeclaration
+       | localDeclarations localDeclaration
+       ;
+
+localDeclaration
+       : type IDENTIFIER SEMICOLON
+       ;
+
+statements
+       :            statement
+       | statements statement
+       ;
+
+statement
+       : assignment
+       | ifStatement
+       | whileStatement
+       | returnStatement
+       | callStatement
+       | printStatement
+       | block
+       ;
+
+assignment
+       : leftPart ASSIGN expression SEMICOLON
+       ;
+
+leftPart
+       : compoundName
+       | compoundName LBRACKET expression RBRACKET
+       ;
+
+compoundName
+       :                  IDENTIFIER
+       | compoundName DOT IDENTIFIER
+       ;
+
+ifStatement
+       : IF LPAREN relation RPAREN statement
+       | IF LPAREN relation RPAREN statement ELSE statement
+       ;
+
+whileStatement
+       : WHILE relation LOOP statement SEMICOLON
+       ;
+
+returnStatement
+       : RETURN            SEMICOLON
+       | RETURN expression SEMICOLON
+       ;
+
+callStatement
+       : compoundName LPAREN              RPAREN SEMICOLON
+| compoundName LPAREN argumentList RPAREN SEMICOLON
+       ;
+
+argumentList
+       :                    expression
+       | argumentList COMMA expression
+       ;
+
+printStatement
+       : PRINT expression SEMICOLON
+       ;
+
+block
+       : LBRACE            RBRACE
+       | LBRACE statements RBRACE
+       ;
+
+relation
+       : expression
+       | expression relationalOperator expression
+       ;
+
+relationalOperator
+       : LESS
+       | GREATER
+       | EQUAL
+       | NOT_EQUAL
+       ;
+
+expression
+    :         term terms
+       | addSign term terms
+       ;
+
+addSign
+       : PLUS
+       | MINUS
+       ;
+
+terms
+       : /* empty */
+       | addSign term terms
+       ;
+
+term
+       : factor factors
+       ;
+
+factors
+       : /* empty */
+       | multSign factor factors
+       ;
+
+multSign
+       : MULTIPLY
+       | DIVIDE
+       ;
+
+factor
+       : NUMBER
+       | leftPart
+       | NULL
+       | NEW newType
+       | NEW newType LBRACKET expression RBRACKET
+       ;
+
+newType
+       : INT
+       | REAL
+       | IDENTIFIER
+       ;
+
+type
+       : INT        arrayTail
+       | REAL       arrayTail
+       | IDENTIFIER arrayTail
+       ;
+
+arrayTail
+       : /* empty */
+       | LBRACKET RBRACKET
+       ;
