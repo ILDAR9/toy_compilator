@@ -2,7 +2,7 @@ import id1;
 import id2;
 import id3;
 
-public class com.example.Class1 extends Object; {
+public class Class1 extends Object; {
     public static int field1;
     private real[] field2;
 

@@ -1,36 +1,103 @@
 grammar TOY_parser;
 
 
-//import TOY_lexer;
-
-// Start point
+// starting point for parsing a java file
 compilationUnit
-    : imports classDeclarations EOF
+    :   packageDeclaration? importDeclaration* typeDeclaration* EOF
     ;
 
-imports
-    :importDeclaration*
-;
+packageDeclaration
+    :   annotation* 'package' qualifiedName ';'
+    ;
 
 importDeclaration
-    :   IMPORT qualifiedName ('.' '*')? SEMICOLON
+    :   IMPORT 'static'? qualifiedName ('.' '*')? ';'
     ;
 
-classDeclarations
-    :classDeclaration+
+typeDeclaration
+    :   classOrInterfaceModifier* classDeclaration
+    |   classOrInterfaceModifier* enumDeclaration
+    |   classOrInterfaceModifier* interfaceDeclaration
+    |   classOrInterfaceModifier* annotationTypeDeclaration
+    |   ';'
+    ;
+
+modifier
+    :   classOrInterfaceModifier
+    |   (   'native'
+        |   'synchronized'
+        |   'transient'
+        |   'volatile'
+        )
+    ;
+
+classOrInterfaceModifier
+    :   annotation       // class or interface
+    |   (   'public'     // class or interface
+        |   'protected'  // class or interface
+        |   'private'    // class or interface
+        |   'static'     // class or interface
+        |   'abstract'   // class or interface
+        |   'final'      // class only -- does not apply to interfaces
+        |   'strictfp'   // class or interface
+        )
+    ;
+
+variableModifier
+    :   'final'
+    |   annotation
     ;
 
 classDeclaration
-    :PUBLIC CLASS Identifier extension SEMICOLON classBody
+    :   'class' Identifier typeParameters?
+        ('extends' type)?
+        ('implements' typeList)?
+        classBody
     ;
 
-extension
-       : /* empty */
-       | EXTENDS Identifier
-       ;
+typeParameters
+    :   '<' typeParameter (',' typeParameter)* '>'
+    ;
+
+typeParameter
+    :   Identifier ('extends' typeBound)?
+    ;
+
+typeBound
+    :   type ('&' type)*
+    ;
+
+enumDeclaration
+    :   ENUM Identifier ('implements' typeList)?
+        '{' enumConstants? ','? enumBodyDeclarations? '}'
+    ;
+
+enumConstants
+    :   enumConstant (',' enumConstant)*
+    ;
+
+enumConstant
+    :   annotation* Identifier arguments? classBody?
+    ;
+
+enumBodyDeclarations
+    :   ';' classBodyDeclaration*
+    ;
+
+interfaceDeclaration
+    :   'interface' Identifier typeParameters? ('extends' typeList)? interfaceBody
+    ;
+
+typeList
+    :   type (',' type)*
+    ;
 
 classBody
-    :   LBRACE classBodyDeclaration* RBRACE
+    :   '{' classBodyDeclaration* '}'
+    ;
+
+interfaceBody
+    :   '{' interfaceBodyDeclaration* '}'
     ;
 
 classBodyDeclaration
@@ -46,6 +113,7 @@ memberDeclaration
     |   constructorDeclaration
     |   genericConstructorDeclaration
     |   interfaceDeclaration
+    |   annotationTypeDeclaration
     |   classDeclaration
     |   enumDeclaration
     ;
@@ -210,7 +278,13 @@ literal
     |   'null'
     ;
 
+// ANNOTATIONS
 
+annotation
+    :   '@' annotationName ( '(' ( elementValuePairs | elementValue )? ')' )?
+    ;
+
+annotationName : qualifiedName ;
 
 elementValuePairs
     :   elementValuePair (',' elementValuePair)*
@@ -277,6 +351,7 @@ block
 blockStatement
     :   localVariableDeclarationStatement
     |   statement
+    |   typeDeclaration
     ;
 
 localVariableDeclarationStatement
@@ -491,63 +566,104 @@ arguments
     :   '(' expressionList? ')'
     ;
 
+// LEXER
 
-// Keywords
-NUMBER : [0-9];
-IMPORT  : 'import'       ;
-CLASS   : 'class'        ;
-EXTENDS : 'extends'      ;
-PRIVATE : 'private'      ;
-PUBLIC  : 'public'       ;
-STATIC  : 'static'       ;
-VOID    : 'void'         ;
-IF      : 'if'           ;
-ELSE    : 'else'         ;
-WHILE   : 'while'        ;
-LOOP    : 'for'          ;
-RETURN  : 'return'       ;
-PRINT   : 'print'        ;
-NEW     : 'new'          ;
-INT     : 'int'          ;
-REAL    : 'real'|'float' ;
-BOOLEAN : 'bool'         ;
+// §3.9 Keywords
 
+ABSTRACT      : 'abstract';
+ASSERT        : 'assert';
+BOOLEAN       : 'boolean';
+BREAK         : 'break';
+BYTE          : 'byte';
+CASE          : 'case';
+CATCH         : 'catch';
+CHAR          : 'char';
+CLASS         : 'class';
+CONST         : 'const';
+CONTINUE      : 'continue';
+DEFAULT       : 'default';
+DO            : 'do';
+DOUBLE        : 'double';
+ELSE          : 'else';
+ENUM          : 'enum';
+EXTENDS       : 'extends';
+FINAL         : 'final';
+FINALLY       : 'finally';
+FLOAT         : 'float';
+FOR           : 'for';
+IF            : 'if';
+GOTO          : 'goto';
+IMPLEMENTS    : 'implements';
+IMPORT        : 'import';
+INSTANCEOF    : 'instanceof';
+INT           : 'int';
+INTERFACE     : 'interface';
+LONG          : 'long';
+NATIVE        : 'native';
+NEW           : 'new';
+PACKAGE       : 'package';
+PRIVATE       : 'private';
+PROTECTED     : 'protected';
+PUBLIC        : 'public';
+RETURN        : 'return';
+SHORT         : 'short';
+STATIC        : 'static';
+STRICTFP      : 'strictfp';
+SUPER         : 'super';
+SWITCH        : 'switch';
+SYNCHRONIZED  : 'synchronized';
+THIS          : 'this';
+THROW         : 'throw';
+THROWS        : 'throws';
+TRANSIENT     : 'transient';
+TRY           : 'try';
+VOID          : 'void';
+VOLATILE      : 'volatile';
+WHILE         : 'while';
 
-// Delimiters
-LBRACE     :'{' ;
-RBRACE     :'}' ;
-LPAREN     :'(' ;
-RPAREN     :')' ;
-LBRACKET   :'[' ;
-RBRACKET   :']' ;
-COMMA      :',' ;
-DOT        :'.' ;
-SEMICOLON  :';' ;
-
-//Operator signs
-ASSIGN     :'='  ;
-LESS       :'<'  ;
-GREATER    :'>'  ;
-EQUAL      :'==' ;
-NOT_EQUAL  :'!=' ;
-AND        :'&&' ;
-OR         :'||' ;
-POW        : '^' ;
-PLUS       :'+'  ;
-MINUS      :'-'  ;
-MULTIPLY   :'*'  ;
-DIVIDE     :'/'  ;
-
-// Integer Literal
+// §3.10.1 Integer Literals
 
 IntegerLiteral
     :   DecimalIntegerLiteral
+    |   HexIntegerLiteral
+    |   OctalIntegerLiteral
+    |   BinaryIntegerLiteral
+    ;
+
+fragment
+DecimalIntegerLiteral
+    :   DecimalNumeral IntegerTypeSuffix?
+    ;
+
+fragment
+HexIntegerLiteral
+    :   HexNumeral IntegerTypeSuffix?
+    ;
+
+fragment
+OctalIntegerLiteral
+    :   OctalNumeral IntegerTypeSuffix?
+    ;
+
+fragment
+BinaryIntegerLiteral
+    :   BinaryNumeral IntegerTypeSuffix?
+    ;
+
+fragment
+IntegerTypeSuffix
+    :   [lL]
     ;
 
 fragment
 DecimalNumeral
     :   '0'
-    |   NonZeroDigit Digit*
+    |   NonZeroDigit (Digits? | Underscores Digits)
+    ;
+
+fragment
+Digits
+    :   Digit (DigitOrUnderscore* Digit)?
     ;
 
 fragment
@@ -561,22 +677,298 @@ NonZeroDigit
     :   [1-9]
     ;
 
-// Boolean Literals
+fragment
+DigitOrUnderscore
+    :   Digit
+    |   '_'
+    ;
+
+fragment
+Underscores
+    :   '_'+
+    ;
+
+fragment
+HexNumeral
+    :   '0' [xX] HexDigits
+    ;
+
+fragment
+HexDigits
+    :   HexDigit (HexDigitOrUnderscore* HexDigit)?
+    ;
+
+fragment
+HexDigit
+    :   [0-9a-fA-F]
+    ;
+
+fragment
+HexDigitOrUnderscore
+    :   HexDigit
+    |   '_'
+    ;
+
+fragment
+OctalNumeral
+    :   '0' Underscores? OctalDigits
+    ;
+
+fragment
+OctalDigits
+    :   OctalDigit (OctalDigitOrUnderscore* OctalDigit)?
+    ;
+
+fragment
+OctalDigit
+    :   [0-7]
+    ;
+
+fragment
+OctalDigitOrUnderscore
+    :   OctalDigit
+    |   '_'
+    ;
+
+fragment
+BinaryNumeral
+    :   '0' [bB] BinaryDigits
+    ;
+
+fragment
+BinaryDigits
+    :   BinaryDigit (BinaryDigitOrUnderscore* BinaryDigit)?
+    ;
+
+fragment
+BinaryDigit
+    :   [01]
+    ;
+
+fragment
+BinaryDigitOrUnderscore
+    :   BinaryDigit
+    |   '_'
+    ;
+
+// §3.10.2 Floating-Point Literals
+
+FloatingPointLiteral
+    :   DecimalFloatingPointLiteral
+    |   HexadecimalFloatingPointLiteral
+    ;
+
+fragment
+DecimalFloatingPointLiteral
+    :   Digits '.' Digits? ExponentPart? FloatTypeSuffix?
+    |   '.' Digits ExponentPart? FloatTypeSuffix?
+    |   Digits ExponentPart FloatTypeSuffix?
+    |   Digits FloatTypeSuffix
+    ;
+
+fragment
+ExponentPart
+    :   ExponentIndicator SignedInteger
+    ;
+
+fragment
+ExponentIndicator
+    :   [eE]
+    ;
+
+fragment
+SignedInteger
+    :   Sign? Digits
+    ;
+
+fragment
+Sign
+    :   [+-]
+    ;
+
+fragment
+FloatTypeSuffix
+    :   [fFdD]
+    ;
+
+fragment
+HexadecimalFloatingPointLiteral
+    :   HexSignificand BinaryExponent FloatTypeSuffix?
+    ;
+
+fragment
+HexSignificand
+    :   HexNumeral '.'?
+    |   '0' [xX] HexDigits? '.' HexDigits
+    ;
+
+fragment
+BinaryExponent
+    :   BinaryExponentIndicator SignedInteger
+    ;
+
+fragment
+BinaryExponentIndicator
+    :   [pP]
+    ;
+
+// §3.10.3 Boolean Literals
+
 BooleanLiteral
     :   'true'
     |   'false'
     ;
 
-// Null Literal
+// §3.10.4 Character Literals
+
+CharacterLiteral
+    :   '\'' SingleCharacter '\''
+    |   '\'' EscapeSequence '\''
+    ;
+
+fragment
+SingleCharacter
+    :   ~['\\]
+    ;
+
+// §3.10.5 String Literals
+
+StringLiteral
+    :   '"' StringCharacters? '"'
+    ;
+
+fragment
+StringCharacters
+    :   StringCharacter+
+    ;
+
+fragment
+StringCharacter
+    :   ~["\\]
+    |   EscapeSequence
+    ;
+
+// §3.10.6 Escape Sequences for Character and String Literals
+
+fragment
+EscapeSequence
+    :   '\\' [btnfr"'\\]
+    |   OctalEscape
+    |   UnicodeEscape
+    ;
+
+fragment
+OctalEscape
+    :   '\\' OctalDigit
+    |   '\\' OctalDigit OctalDigit
+    |   '\\' ZeroToThree OctalDigit OctalDigit
+    ;
+
+fragment
+UnicodeEscape
+    :   '\\' 'u' HexDigit HexDigit HexDigit HexDigit
+    ;
+
+fragment
+ZeroToThree
+    :   [0-3]
+    ;
+
+// §3.10.7 The Null Literal
+
 NullLiteral
     :   'null'
     ;
 
-// Idetntifier appears after every keyword in the grammar
-fragment LETTER : [a-zA-Z\u0080-\u00FF_];
-Identifier : LETTER+(LETTER|Digit)* ;
+// §3.11 Separators
 
+LPAREN          : '(';
+RPAREN          : ')';
+LBRACE          : '{';
+RBRACE          : '}';
+LBRACK          : '[';
+RBRACK          : ']';
+SEMI            : ';';
+COMMA           : ',';
+DOT             : '.';
+
+// §3.12 Operators
+
+ASSIGN          : '=';
+GT              : '>';
+LT              : '<';
+BANG            : '!';
+TILDE           : '~';
+QUESTION        : '?';
+COLON           : ':';
+EQUAL           : '==';
+LE              : '<=';
+GE              : '>=';
+NOTEQUAL        : '!=';
+AND             : '&&';
+OR              : '||';
+INC             : '++';
+DEC             : '--';
+ADD             : '+';
+SUB             : '-';
+MUL             : '*';
+DIV             : '/';
+BITAND          : '&';
+BITOR           : '|';
+CARET           : '^';
+MOD             : '%';
+
+ADD_ASSIGN      : '+=';
+SUB_ASSIGN      : '-=';
+MUL_ASSIGN      : '*=';
+DIV_ASSIGN      : '/=';
+AND_ASSIGN      : '&=';
+OR_ASSIGN       : '|=';
+XOR_ASSIGN      : '^=';
+MOD_ASSIGN      : '%=';
+LSHIFT_ASSIGN   : '<<=';
+RSHIFT_ASSIGN   : '>>=';
+URSHIFT_ASSIGN  : '>>>=';
+
+// §3.8 Identifiers (must appear after all keywords in the grammar)
+
+Identifier
+    :   JavaLetter JavaLetterOrDigit*
+    ;
+
+fragment
+JavaLetter
+    :   [a-zA-Z$_] // these are the "java letters" below 0xFF
+    |   // covers all characters above 0xFF which are not a surrogate
+        ~[\u0000-\u00FF\uD800-\uDBFF]
+        {Character.isJavaIdentifierStart(_input.LA(-1))}?
+    |   // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
+        [\uD800-\uDBFF] [\uDC00-\uDFFF]
+        {Character.isJavaIdentifierStart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?
+    ;
+
+fragment
+JavaLetterOrDigit
+    :   [a-zA-Z0-9$_] // these are the "java letters or digits" below 0xFF
+    |   // covers all characters above 0xFF which are not a surrogate
+        ~[\u0000-\u00FF\uD800-\uDBFF]
+        {Character.isJavaIdentifierPart(_input.LA(-1))}?
+    |   // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
+        [\uD800-\uDBFF] [\uDC00-\uDFFF]
+        {Character.isJavaIdentifierPart(Character.toCodePoint((char)_input.LA(-2), (char)_input.LA(-1)))}?
+    ;
+
+//
+// Additional symbols not defined in the lexical specification
+//
+
+AT : '@';
+ELLIPSIS : '...';
+
+//
 // Whitespace and comments
+//
+
 WS  :  [ \t\r\n\u000C]+ -> skip
     ;
 
