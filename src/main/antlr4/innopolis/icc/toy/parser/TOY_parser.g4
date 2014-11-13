@@ -111,7 +111,7 @@ statement
        ;
 
 assignment
-       : leftPart ASSIGN expression SEMICOLON
+       : leftPart ASSIGN literal SEMICOLON
        ;
 
 leftPart
@@ -143,7 +143,8 @@ callStatement
        ;
 
 arguments
-       : LPAREN argumentList? RPAREN
+       : LPAREN              RPAREN
+       | LPAREN argumentList RPAREN
        ;
 
 argumentList
@@ -175,8 +176,9 @@ relationalOperator
        | NOT_EQUAL
        ;
 
-expression   //ToDO think about it
-    :         term terms
+expression
+       : literal
+       |         term terms
        | addSign term terms
        ;
 
@@ -208,8 +210,8 @@ factor
        : literal
        | leftPart
        | NULL
-       | NEW newType
-       | NEW newType LBRACKET REALssion RBRACKET
+   //  | NEW newType
+   //  | NEW newType LBRACKET expression RBRACKET
        ;
 
 literal
@@ -217,6 +219,24 @@ literal
        | FloatingPointLiteral
        | BooleanLiteral
        ;
+
+// Real literal
+
+FloatingPointLiteral
+    : DecimalNumeral DOT NUMBER+
+    ;
+
+// Integer Literal
+
+IntegerLiteral
+    : DecimalNumeral
+    ;
+
+// Boolean Literals
+BooleanLiteral
+    :   'true'
+    |   'false'
+    ;
 
 newType
        : INT

@@ -48,19 +48,8 @@ DIVIDE     :'/'  ;
 
 
 
-// Real literal
 
-FloatingPointLiteral
-    : DecimalNumeral DOT NUMBER+
-    ;
 
-// Integer Literal
-
-IntegerLiteral
-    : DecimalNumeral
-    ;
-
-fragment
 DecimalNumeral
     :   '0'
     |   NonZeroDigit NUMBER*
@@ -69,12 +58,6 @@ DecimalNumeral
 fragment
 NonZeroDigit
     :   [1-9]
-    ;
-
-// Boolean Literals
-BooleanLiteral
-    :   'true'
-    |   'false'
     ;
 
 // Idetntifier appears after every keyword in the grammar

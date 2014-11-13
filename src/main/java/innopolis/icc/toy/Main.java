@@ -3,6 +3,7 @@ package innopolis.icc.toy;
 import innopolis.icc.toy.compilator.Compilator;
 import innopolis.icc.toy.compilator.ICompilator;
 import innopolis.icc.toy.utils.DataUtils;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class Main {
         }
 
 
-//            ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
+            ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
 //            TOY_parserListener extractor = new TOY_parserBaseListener(parser);
 //            walker.walk(extractor, tree); // initiate walk of tree with listener
 
