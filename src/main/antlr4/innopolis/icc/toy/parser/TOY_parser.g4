@@ -8,7 +8,7 @@ compilationUnit
     ;
 
 qualifiedName
-    :IDENTIFIER ('.' IDENTIFIER)*
+    :IDENTIFIER (DOT IDENTIFIER)*
     ;
 
 imports
@@ -16,15 +16,15 @@ imports
 ;
 
 importDeclaration
-    : IMPORT qualifiedName ('.' '*')? SEMICOLON
+    : IMPORT qualifiedName (DOT MULTIPLY)? SEMICOLON
     ;
 
 classDeclarations
-    :classDeclaration+
+    :classDeclaration
     ;
 
 classDeclaration
-    :PUBLIC CLASS compoundName extension SEMICOLON classBody
+    :PUBLIC CLASS qualifiedName extension SEMICOLON classBody
     ;
 
 extension
@@ -38,12 +38,12 @@ classBody
        ;
 
 classMembers
-       :              classMember
-       | classMembers classMember
+       :              classMember*
        ;
 
 classMember
-       : fieldDeclaration
+       : fieldDeclaration //ToDo finish classMember
+       | methodDeclaration
        ;
 
 fieldDeclaration
@@ -72,8 +72,7 @@ parameters
        ;
 
 parameterList
-       :                     parameter
-       | parameterList COMMA parameter
+       : parameter (COMMA parameter)*
        ;
 
 parameter
@@ -90,8 +89,7 @@ body
        ;
 
 localDeclarations
-       :                   localDeclaration
-       | localDeclarations localDeclaration
+       :                   localDeclaration*
        ;
 
 localDeclaration
@@ -99,8 +97,7 @@ localDeclaration
        ;
 
 statements
-       :            statement
-       | statements statement
+       :            statement*
        ;
 
 statement
@@ -142,13 +139,19 @@ returnStatement
        ;
 
 callStatement
-       : compoundName LPAREN              RPAREN SEMICOLON
-| compoundName LPAREN argumentList RPAREN SEMICOLON
+       : compoundName  arguments SEMICOLON
+       ;
+
+arguments
+       : LPAREN argumentList? RPAREN
        ;
 
 argumentList
-       :                    expression
-       | argumentList COMMA expression
+       : argument (COMMA argument)*
+       ;
+
+argument
+       : expression
        ;
 
 printStatement
@@ -172,7 +175,7 @@ relationalOperator
        | NOT_EQUAL
        ;
 
-expression
+expression   //ToDO think about it
     :         term terms
        | addSign term terms
        ;
@@ -202,11 +205,17 @@ multSign
        ;
 
 factor
-       : NUMBER
+       : literal
        | leftPart
        | NULL
        | NEW newType
-       | NEW newType LBRACKET expression RBRACKET
+       | NEW newType LBRACKET REALssion RBRACKET
+       ;
+
+literal
+       : IntegerLiteral
+       | FloatingPointLiteral
+       | BooleanLiteral
        ;
 
 newType

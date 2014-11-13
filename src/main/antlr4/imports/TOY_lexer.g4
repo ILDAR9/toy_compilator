@@ -17,7 +17,7 @@ RETURN  : 'return'       ;
 PRINT   : 'print'        ;
 NEW     : 'new'          ;
 INT     : 'int'          ;
-REAL    : 'real'|'float' ;
+REAL    : 'real'         ;
 BOOLEAN : 'bool'         ;
 
 
@@ -46,6 +46,14 @@ MINUS      :'-'  ;
 MULTIPLY   :'*'  ;
 DIVIDE     :'/'  ;
 
+
+
+// Real literal
+
+FloatingPointLiteral
+    : DecimalNumeral DOT NUMBER+
+    ;
+
 // Integer Literal
 
 IntegerLiteral
@@ -67,11 +75,6 @@ NonZeroDigit
 BooleanLiteral
     :   'true'
     |   'false'
-    ;
-
-// Null Literal
-NullLiteral
-    :   'null'
     ;
 
 // Idetntifier appears after every keyword in the grammar
