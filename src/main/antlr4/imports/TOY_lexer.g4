@@ -49,19 +49,13 @@ DIVIDE     :'/'  ;
 // Integer Literal
 
 IntegerLiteral
-    :   DecimalIntegerLiteral
+    : DecimalNumeral
     ;
 
 fragment
 DecimalNumeral
     :   '0'
-    |   NonZeroDigit Digit*
-    ;
-
-fragment
-Digit
-    :   '0'
-    |   NonZeroDigit
+    |   NonZeroDigit NUMBER*
     ;
 
 fragment
@@ -82,7 +76,7 @@ NullLiteral
 
 // Idetntifier appears after every keyword in the grammar
 fragment LETTER : [a-zA-Z\u0080-\u00FF_];
-Identifier : LETTER+(LETTER|Digit)* ;
+IDENTIFIER : LETTER+(LETTER|NUMBER)* ;
 
 // Whitespace and comments
 WS  :  [ \t\r\n\u000C]+ -> skip

@@ -4,15 +4,23 @@ import TOY_lexer;
 
 //start compilationUnit
 compilationUnit
-    :   importDeclaration* classDeclaration* EOF
+    : imports classDeclarations
     ;
 
 qualifiedName
     :IDENTIFIER ('.' IDENTIFIER)*
     ;
 
+imports
+    :importDeclaration*
+;
+
 importDeclaration
     : IMPORT qualifiedName ('.' '*')? SEMICOLON
+    ;
+
+classDeclarations
+    :classDeclaration+
     ;
 
 classDeclaration
@@ -194,7 +202,7 @@ multSign
        ;
 
 factor
-       : NUMBER+
+       : NUMBER
        | leftPart
        | NULL
        | NEW newType
