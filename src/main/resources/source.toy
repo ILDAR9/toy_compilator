@@ -1,8 +1,8 @@
-import id1;
-import id2;
-import id3;
+import com.test.id1;
+import com.test.id2;
+import com.test.id3;
 
-public class Class1 extends Object; {
+public class Class1 extends id1; {
     public static int field1;
     private real[] field2;
 
@@ -11,8 +11,13 @@ public class Class1 extends Object; {
 
     private void method2(int[] param3, real[] param4) {
     }
+    //Ignore this line
+    public int method3(int param1){
+        return ; //ToDo check about return no argument
+    }
 
-    private void method3() {
+    /* Ignore this lien too */
+    public static void main() {
         int localField1;
         real[] localField2;
         MyClass localField3;
