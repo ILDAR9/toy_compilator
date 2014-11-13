@@ -36,7 +36,6 @@ classMembers
 
 classMember
        : fieldDeclaration
-       | methodDeclaration
        ;
 
 fieldDeclaration
