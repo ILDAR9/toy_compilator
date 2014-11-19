@@ -119,8 +119,8 @@ variableDeclarators
     ;
 
 variableDeclarator
-    :   variableDeclaratorId ('=' variableInitializer)?
-    ;
+         :   variableDeclaratorId ('=' variableInitializer)?
+         ;
 
 variableDeclaratorId
     :   Identifier ('[' ']')*

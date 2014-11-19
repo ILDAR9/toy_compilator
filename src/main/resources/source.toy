@@ -18,10 +18,18 @@ public class Class1 extends id1; {
 
     /* Ignore this lien too */
     public static void main() {
-        int localField1;
+        int localField1, i;
         real[] localField2;
         MyClass localField3;
         MyClass[] localField4;
+
+        for (i = 0; i < 4; i = i + 1){
+            print i;
+        }
+
+        while(i > 0){
+            i = i - 1;
+        }
 
         localField5 = 5;
         localField6.compound.subCompound = 6;

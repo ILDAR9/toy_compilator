@@ -1,7 +1,5 @@
 grammar TOY_parser;
 
-import TOY_lexer;
-
 //start compilationUnit
 compilationUnit
     : imports classDeclarations
@@ -89,21 +87,22 @@ body
        ;
 
 localDeclarations
-       :                   localDeclaration*
+       :  localDeclaration*
        ;
 
 localDeclaration
-       : type IDENTIFIER SEMICOLON
+       : type IDENTIFIER (COMMA IDENTIFIER)* SEMICOLON
        ;
 
 statements
-       :            statement*
+       :   statement*
        ;
 
 statement
        : assignment
        | ifStatement
        | whileStatement
+       | forStatement
        | returnStatement
        | callStatement
        | printStatement
@@ -111,7 +110,7 @@ statement
        ;
 
 assignment
-       : leftPart ASSIGN literal SEMICOLON
+       : leftPart ASSIGN (literal|expression) SEMICOLON
        ;
 
 leftPart
@@ -130,17 +129,50 @@ ifStatement
        ;
 
 whileStatement
-       : WHILE relation LOOP statement SEMICOLON
+       : WHILE LPAREN relation RPAREN LBRACE statements RBRACE
        ;
+
+
+// begin for statment
+forStatement
+    :   LOOP LPAREN forControl RPAREN LBRACE statements RBRACE
+    ;
+
+forControl
+    :   forInit? SEMICOLON relation? SEMICOLON forUpdate?
+    ;
+
+forInit
+    :   expressionList
+    |   variableDeclarators
+    ;
+
+forUpdate
+    :   expressionList
+    |   variableDeclarators
+    ;
+// end for statment
+
+expressionList
+    :   expression (',' expression)*
+    ;
+
+variableDeclarators
+    :   variableDeclarator (',' variableDeclarator)*
+    ;
+
+variableDeclarator
+    :   leftPart ASSIGN (literal|expression)
+    ;
 
 returnStatement
-       : RETURN            SEMICOLON
-       | RETURN expression SEMICOLON
-       ;
+    : RETURN            SEMICOLON
+    | RETURN expression SEMICOLON
+    ;
 
 callStatement
-       : compoundName  arguments SEMICOLON
-       ;
+    : compoundName  arguments SEMICOLON
+    ;
 
 arguments
        : LPAREN              RPAREN
@@ -254,3 +286,84 @@ arrayTail
        : /* empty */
        | LBRACKET RBRACKET
        ;
+
+
+
+
+//Lexer
+// Keywords
+NUMBER : [0-9];
+IMPORT  : 'import'       ;
+CLASS   : 'class'        ;
+EXTENDS : 'extends'      ;
+PRIVATE : 'private'      ;
+PUBLIC  : 'public'       ;
+STATIC  : 'static'       ;
+VOID    : 'void'         ;
+IF      : 'if'           ;
+ELSE    : 'else'         ;
+WHILE   : 'while'        ;
+LOOP    : 'for'          ;
+RETURN  : 'return'       ;
+PRINT   : 'print'        ;
+NEW     : 'new'          ;
+INT     : 'int'          ;
+REAL    : 'real'         ;
+BOOLEAN : 'bool'         ;
+
+
+// Delimiters
+LBRACE     :'{' ;
+RBRACE     :'}' ;
+LPAREN     :'(' ;
+RPAREN     :')' ;
+LBRACKET   :'[' ;
+RBRACKET   :']' ;
+COMMA      :',' ;
+DOT        :'.' ;
+SEMICOLON  :';' ;
+
+//Operator signs
+ASSIGN     :'='  ;
+LESS       :'<'  ;
+GREATER         : '>' ;
+EQUAL      :'==' ;
+NOT_EQUAL  :'!=' ;
+AND        :'&&' ;
+OR         :'||' ;
+POW        : '^' ;
+PLUS       :'+'  ;
+MINUS      :'-'  ;
+MULTIPLY   :'*'  ;
+DIVIDE     :'/'  ;
+
+
+
+
+
+DecimalNumeral
+    :   '0'
+    |   NonZeroDigit NUMBER*
+    ;
+
+fragment
+NonZeroDigit
+    :   [1-9]
+    ;
+
+// Idetntifier appears after every keyword in the grammar
+fragment LETTER : [a-zA-Z\u0080-\u00FF_];
+IDENTIFIER
+    : LETTER (LETTER|NUMBER)* ;
+
+// Whitespace and comments
+WS  :  [ \t\r\n\u000C]+ -> skip
+    ;
+
+COMMENT
+    :   '/*' .*? '*/' -> skip
+    ;
+
+LINE_COMMENT
+    : '//' (~('\n'|'\r'))* ->skip
+    ;
