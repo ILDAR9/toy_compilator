@@ -29,15 +29,7 @@ public class Main {
             }
         } catch (ToyException e) {
             logger.error("", e);
-            e.printStackTrace();
         }
-
-
-        //ParseTreeWalker walker = new ParseTreeWalker(); // create standard walker
-//            TOY_parserListener extractor = new TOY_parserBaseListener(parser);
-//            walker.walk(extractor, tree); // initiate walk of tree with listener
-
-
     }
 
 }

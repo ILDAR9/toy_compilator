@@ -1,5 +1,10 @@
 grammar TOY_parser;
 
+@header {
+    import mantra.symbols.Scope;
+    import mantra.symbols.Type;
+}
+
 //start compilationUnit
 compilationUnit
     : imports classDeclarations
@@ -18,7 +23,7 @@ importDeclaration
     ;
 
 classDeclarations
-    :classDeclaration
+    :classDeclaration   //ToDo try add +
     ;
 
 classDeclaration
@@ -40,8 +45,9 @@ classMembers
        ;
 
 classMember
-       : fieldDeclaration //ToDo finish classMember
+       : fieldDeclaration
        | methodDeclaration
+       | block
        ;
 
 fieldDeclaration
@@ -310,6 +316,7 @@ NEW     : 'new'          ;
 INT     : 'int'          ;
 REAL    : 'real'         ;
 BOOLEAN : 'bool'         ;
+NIL     : 'null'         ;
 
 
 // Delimiters
@@ -326,12 +333,11 @@ SEMICOLON  :';' ;
 //Operator signs
 ASSIGN     :'='  ;
 LESS       :'<'  ;
-GREATER         : '>' ;
+GREATER    : '>' ;
 EQUAL      :'==' ;
 NOT_EQUAL  :'!=' ;
 AND        :'&&' ;
 OR         :'||' ;
-POW        : '^' ;
 PLUS       :'+'  ;
 MINUS      :'-'  ;
 MULTIPLY   :'*'  ;
