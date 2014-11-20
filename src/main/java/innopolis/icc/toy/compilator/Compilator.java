@@ -1,12 +1,14 @@
 package innopolis.icc.toy.compilator;
 
 import innopolis.icc.toy.exceptions.ToyException;
+import innopolis.icc.toy.listener.ExtractInterfaceListener;
 import innopolis.icc.toy.parser.TOY_parserLexer;
 import innopolis.icc.toy.parser.TOY_parserParser;
 import innopolis.icc.toy.utils.PropertiesSingelton;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,10 +33,12 @@ public class Compilator implements ICompilator {
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TOY_parserParser parser = new TOY_parserParser(tokens);
         parser.setBuildParseTree(true);
-//            ParserRuleContext<Token> tree = parser.compilationUnit(); // parse
         ParserRuleContext tree = parser.compilationUnit();
-        tree.inspect(parser);
-        //generateCode(root);
+        ParseTreeWalker walker = new ParseTreeWalker();
+        ExtractInterfaceListener extracter = new ExtractInterfaceListener(parser);
+        walker.walk(extracter, tree);
+        //tree.inspect(parser);
+        //generateCode(root);  //ToDo write code generator
         return null;
     }
 
