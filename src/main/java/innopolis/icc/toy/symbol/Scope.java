@@ -1,5 +1,8 @@
 package innopolis.icc.toy.symbol;
 
+import java.util.Collection;
+import java.util.Set;
+
 /***
  * Excerpted from "The Definitive ANTLR 4 Reference",
  * published by The Pragmatic Bookshelf.
@@ -19,4 +22,6 @@ public interface Scope {
 
     /** Look up name in this scope or in enclosing scope if not here */
     public Symbol resolve(String name);
+
+
 }

@@ -7,6 +7,7 @@ package innopolis.icc.toy.listener;
  * We make no guarantees that this code is fit for any purpose. 
  * Visit http://www.pragmaticprogrammer.com/titles/tpantlr2 for more book information.
  ***/
+
 import innopolis.icc.toy.parser.TOY_parserBaseListener;
 import innopolis.icc.toy.parser.TOY_parserParser;
 import innopolis.icc.toy.symbol.*;
@@ -14,8 +15,11 @@ import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DefPhase extends TOY_parserBaseListener {
+    public static final Logger logger = LoggerFactory.getLogger(DefPhase.class);
     ParseTreeProperty<Scope> scopes = new ParseTreeProperty<Scope>();
     GlobalScope globals;
     Scope currentScope; // define symbols in this scope
@@ -28,7 +32,7 @@ public class DefPhase extends TOY_parserBaseListener {
     }
 
     public void exitCompilationUnit(@NotNull TOY_parserParser.CompilationUnitContext ctx) {
-        System.out.println(globals);
+        logger.debug(globals.toString());
     }
 
     @Override
@@ -44,10 +48,12 @@ public class DefPhase extends TOY_parserBaseListener {
         currentScope = function;       // Current scope is now function scope
     }
 
-    void saveScope(ParserRuleContext ctx, Scope s) { scopes.put(ctx, s); }
+    void saveScope(ParserRuleContext ctx, Scope s) {
+        scopes.put(ctx, s);
+    }
 
     public void exitMethodDeclaration(@NotNull TOY_parserParser.MethodDeclarationContext ctx) {
-        System.out.println(currentScope);
+        logger.debug(currentScope.toString());
         currentScope = currentScope.getEnclosingScope(); // pop scope
     }
 
@@ -59,18 +65,15 @@ public class DefPhase extends TOY_parserBaseListener {
     }
 
     public void exitBlock(@NotNull TOY_parserParser.BlockContext ctx) {
-        System.out.println(currentScope);
+        logger.debug(currentScope.toString());
         currentScope = currentScope.getEnclosingScope(); // pop scope
     }
 
-    @Override
-    public void exitVariableDeclarator(@NotNull TOY_parserParser.VariableDeclaratorContext ctx) {
-        defineVar(ctx.type(), ctx.ID().getSymbol());  
-    }
+
 
     @Override
     public void exitParameter(@NotNull TOY_parserParser.ParameterContext ctx) {
-        defineVar(ctx.type(), ctx.ID().getSymbol());
+        defineVar(ctx.type(), ctx.IDENTIFIER().getSymbol());
     }
 
     void defineVar(TOY_parserParser.TypeContext typeCtx, Token nameToken) {

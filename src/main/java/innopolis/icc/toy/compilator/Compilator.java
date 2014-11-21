@@ -50,20 +50,8 @@ public class Compilator implements ICompilator {
         // create next phase and feed symbol table info from def to ref phase
 //        RefPhase ref = new RefPhase(def.globals, def.scopes);
 //        walker.walk(ref, tree);
-        // assume we are parsing Java
-      /*  for (ParseTree t : XPath.findAll(tree, "//fieldDeclaration/IDENTIFIER", parser)) {
-            System.out.println(t);
-            System.out.println("----------------------------------------");
-        }   */
-        System.out.println(tree.toStringTree(parser));
-
-
-        /*// walker example
-        ParseTreeWalker walker = new ParseTreeWalker();
-        ExtractInterfaceListener extractor = new ExtractInterfaceListener(parser);
-        walker.walk(extractor, tree);*/
-        //tree.inspect(parser);
-        // semanticAnalysis(root);
+        tree.inspect(parser);
+        semanticAnalysis(tree);
         return generateCode(tree);  //ToDo write code generator
 
 //        return null;

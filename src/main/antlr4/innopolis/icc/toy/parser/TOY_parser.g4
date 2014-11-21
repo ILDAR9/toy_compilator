@@ -1,10 +1,5 @@
 grammar TOY_parser;
 
-@header {
-    import mantra.symbols.Scope;
-    import mantra.symbols.Type;
-}
-
 //start compilationUnit
 compilationUnit
     : imports classDeclarations
