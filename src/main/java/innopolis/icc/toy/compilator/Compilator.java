@@ -1,23 +1,19 @@
 package innopolis.icc.toy.compilator;
 
 import innopolis.icc.toy.exceptions.ToyException;
-import innopolis.icc.toy.listener.DefPhase;
+import innopolis.icc.toy.listeners.DefScopesAndSymbols;
 import innopolis.icc.toy.parser.TOY_parserLexer;
 import innopolis.icc.toy.parser.TOY_parserParser;
 import innopolis.icc.toy.utils.PropertiesSingelton;
-import innopolis.icc.toy.utils.Utils;
 import org.antlr.v4.runtime.ANTLRFileStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.antlr.v4.runtime.tree.xpath.XPath;
 import org.objectweb.asm.ClassWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.Properties;
@@ -42,16 +38,17 @@ public class Compilator implements ICompilator {
         TOY_parserLexer lexer = new TOY_parserLexer(input);
         CommonTokenStream tokens = new CommonTokenStream(lexer);
         TOY_parserParser parser = new TOY_parserParser(tokens);
-//        parser.setBuildParseTree(true);
+        parser.setBuildParseTree(true);
         ParserRuleContext tree = parser.compilationUnit();
+        //start walk
         ParseTreeWalker walker = new ParseTreeWalker();
-        DefPhase def = new DefPhase();
+        DefScopesAndSymbols def = new DefScopesAndSymbols(tree, parser);
         walker.walk(def, tree);
         // create next phase and feed symbol table info from def to ref phase
 //        RefPhase ref = new RefPhase(def.globals, def.scopes);
 //        walker.walk(ref, tree);
-        tree.inspect(parser);
-        semanticAnalysis(tree);
+//        tree.inspect(parser);
+//        semanticAnalysis(tree);
         return generateCode(tree);  //ToDo write code generator
 
 //        return null;

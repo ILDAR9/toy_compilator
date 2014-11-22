@@ -1,5 +1,9 @@
 grammar TOY_parser;
 
+@header {
+import innopolis.icc.toy.symbols.Scope;
+}
+
 //start compilationUnit
 compilationUnit
     : imports classDeclarations
@@ -22,6 +26,7 @@ classDeclarations
     ;
 
 classDeclaration
+    locals [Scope scope]
     :PUBLIC CLASS qualifiedName extension SEMICOLON classBody
     ;
 
@@ -46,7 +51,7 @@ classMember
        ;
 
 fieldDeclaration
-       : visibility staticness type IDENTIFIER SEMICOLON
+       : visibility staticness localDeclaration
        ;
 
 visibility
@@ -61,6 +66,7 @@ staticness
        ;
 
 methodDeclaration
+       locals [Scope scope]
        : visibility staticness methodType IDENTIFIER parameters
             body
        ;
@@ -75,11 +81,11 @@ parameterList
        ;
 
 parameter
-       : type IDENTIFIER
+       : coreType IDENTIFIER
        ;
 
 methodType
-       : type
+       : coreType
        | VOID
        ;
 
@@ -92,7 +98,7 @@ localDeclarations
        ;
 
 localDeclaration
-       : type IDENTIFIER (COMMA IDENTIFIER)* SEMICOLON
+       : coreType IDENTIFIER (COMMA IDENTIFIER)* SEMICOLON
        ;
 
 statements
@@ -116,12 +122,11 @@ assignment
 
 leftPart
        : compoundName
-       | compoundName LBRACKET expression RBRACKET
+       | compoundName LBRACKET expression RBRACKET  //array
        ;
 
 compoundName
-       :                  IDENTIFIER
-       | compoundName DOT IDENTIFIER
+       :  IDENTIFIER (DOT IDENTIFIER)*
        ;
 
 ifStatement
@@ -193,6 +198,7 @@ printStatement
        ;
 
 block
+       locals [Scope scope]
        : LBRACE            RBRACE
        | LBRACE statements RBRACE
        ;
@@ -271,17 +277,17 @@ BooleanLiteral
     |   'false'
     ;
 
-newType
-       : INT
-       | REAL
-       | IDENTIFIER
-       ;
+//newType
+//  : INT
+//   | REAL
+//   | IDENTIFIER
+    //;
 
-type
-       : INT        arrayTail
-       | REAL       arrayTail
-       | IDENTIFIER arrayTail
-       ;
+coreType
+   : INT        arrayTail
+   | REAL       arrayTail
+   | IDENTIFIER arrayTail
+   ;
 
 arrayTail
        : /* empty */
